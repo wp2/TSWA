@@ -73,6 +73,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ONP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
