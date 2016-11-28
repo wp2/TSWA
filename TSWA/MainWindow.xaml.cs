@@ -17,9 +17,13 @@ namespace TSWA {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Window
+    {
+        LogicController LogicMaster;
         public MainWindow() {
             InitializeComponent();
+            LogicMaster = new LogicController();
+            int d = 99;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
@@ -35,6 +39,7 @@ namespace TSWA {
             var myValue = ((Button)sender).Tag.ToString();
 
             var currentlyDisplayed = Displayer.Text.ToString();
+            
             if(string.Compare(currentlyDisplayed,"0") == 0) {
                 currentlyDisplayed = myValue;
             }

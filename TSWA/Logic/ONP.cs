@@ -198,7 +198,7 @@ namespace ONP
     /********************************************************************/
 
     class InfixNotationTokenizer // Stokenizuj notacje infix ma uporządkowaną listę tokenów
-    {                   
+    {
         /*public Queue<Token> TokenizeEquation(string Equation)
         {
             Queue<Token> Tokens = new Queue<Token>();
@@ -270,16 +270,42 @@ namespace ONP
 
             }
             return Tokens; // stokenizowana notacja infix na nej wykonamy shunting yard algorithm
-        }  */      
-
-        public Queue<Token> TokenizeEquation(string c,bool DevOutput = false) // V2 używa regex 
+        }  */
+        
+        string Equation;
+        public InfixNotationTokenizer(string equation)
         {
-            Console.WriteLine("RegEx String: " + c);
+            this.Equation = equation;
+            TokenizeEquation();
+        }
+        Queue<Token> InfixNotationTokens;
+
+        public Queue<Token> GetInfixNotationTokens()
+        {
+            return InfixNotationTokens;
+        }
+
+        public void AddSymbol(string equation)
+        {
+            //Equation += equation;
+        }
+
+        public void ClearSymbol()
+        {
+            /*if(Equation.Length == 1 && Equation != "0")
+            {
+                Equation = "";
+            }*/
+        }
+
+        public Queue<Token> TokenizeEquation(bool DevOutput = false) // V2 używa regex 
+        {
+            Console.WriteLine("RegEx String: " + this);
             Queue<Token> Tokens = new Queue<Token>();
             // string expr = @"(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^)|([0-9]+)|sqrt\([\d]\)";
             string expr = @"([A-Z a-z]+\([\d\,?]+\))|(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^|\/)|([0-9\.]+)";
             string func = @"([\w]+)(([0-9]*)|([0-9]*))";
-            MatchCollection mc = Regex.Matches(c, expr);
+            MatchCollection mc = Regex.Matches(this.Equation, expr);
             foreach (Match m in mc)
             {
                 Decimal tmp;
@@ -295,6 +321,7 @@ namespace ONP
                 if(Decimal.TryParse(m.Value.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tmp)) Tokens.Enqueue(new Cyfra("Cyfra", tmp));
                 if(DevOutput)Console.WriteLine(m);
             }
+            this.InfixNotationTokens = Tokens;
             return Tokens;
         }
     }
@@ -309,6 +336,11 @@ namespace ONP
         public TransformToONP(Queue<Token> InfixsTokens)
         {
             InfixTokens = InfixsTokens;
+            shunting_yard();
+        }
+        public TransformToONP(string Eq)
+        {
+            InfixTokens = (new InfixNotationTokenizer(Eq)).TokenizeEquation();
             shunting_yard();
         }
         private void shunting_yard()
@@ -393,14 +425,19 @@ namespace ONP
     }
     class ONP
     {
+        
         Stack<Token> HelpStack;
         Queue<Token> ONPTokens;
-        public ONP(Queue<Token> ONPTokens)
+        public ONP(string Equation) // min Liczba , Operator , Liczba np. 2 + 2 , 2 ^ 7 , sin(2) + 3
         {
-            this.ONPTokens = ONPTokens;
+            InfixNotationTokenizer InfixTokens = new InfixNotationTokenizer(Equation);
+            this.ONPTokens = (new TransformToONP(InfixTokens.GetInfixNotationTokens())).ONP;
             HelpStack = new Stack<Token>();
         }
+        public ONP(TransformToONP OnpNotation)
+        {
 
+        }
         public Number ONPCalculationResult()
         {           
             Number ONPresult = new Number("WynikOperacjiArytmetycznej");
