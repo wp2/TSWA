@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace TSWA
 {
-    class LogicController
+    public class LogicController
     {
         string CurrentEquationState;
         int CurrentNumberBaseSystem;
