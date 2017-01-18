@@ -20,10 +20,15 @@ namespace TSWA {
     public partial class MainWindow : Window
     {
         LogicController LogicMaster;
+        string m_strMessageBoxText;
+
         public MainWindow() {
             InitializeComponent();
             LogicMaster = new LogicController();
-            int d = 99;
+
+            // LogicMaster.getDefaultSettings();
+            m_strMessageBoxText = "0"; // temporary
+            Displayer.Text = m_strMessageBoxText;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e) {
@@ -47,6 +52,22 @@ namespace TSWA {
                 currentlyDisplayed = string.Concat(currentlyDisplayed, myValue);
             }
             Displayer.Text = currentlyDisplayed;
+        }
+
+        private void Del_Button_Click(object sender, RoutedEventArgs e) {
+            
+        }
+
+        private void Clear_Button_Click(object sender, RoutedEventArgs e) {
+            LogicMaster.ClearEquation();
+        }
+
+        private void Word_Button_Click(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void Equal_Button_Click(object sender, RoutedEventArgs e) {
+            LogicMaster.OnEqualButtonClick();
         }
     }
 }

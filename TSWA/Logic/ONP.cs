@@ -1,5 +1,4 @@
-﻿using ONP;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace ONP
+namespace _ONP
 {
     enum Associativity :int
     {
@@ -196,7 +195,7 @@ namespace ONP
         }
     }
     /********************************************************************/
-
+   
     class InfixNotationTokenizer // Stokenizuj notacje infix ma uporządkowaną listę tokenów
     {
         /*public Queue<Token> TokenizeEquation(string Equation)
@@ -343,71 +342,65 @@ namespace ONP
             InfixTokens = (new InfixNotationTokenizer(Eq)).TokenizeEquation();
             shunting_yard();
         }
-        private void shunting_yard()
+        
+        private Boolean shunting_yard()
         {
             ONP = new Queue<Token>();
             TokenStack = new Stack<Token>();
-            foreach(Token tmp in InfixTokens)
-            {
-                if(tmp is Number) // Liczba
-                {
-                    string Typex = tmp.GetType().Name;
-                    // To Cyfra Całkowita Yay !
-                    // Prześlij na wyjście
-                    ONPstring += ((Cyfra)tmp).Value + " ";
-                    ONP.Enqueue(tmp);
-                }
-                if(tmp is NawiasLewy)
-                {
-                    TokenStack.Push(tmp);
-                    continue;
-                }
-                if (tmp is NawiasPrawy)
-                {
-                    
-                    while(TokenStack.Count() > 0)
+            
+                foreach (Token tmp in InfixTokens) {
+                    if (tmp is Number) // Liczba
                     {
-                        Token t = TokenStack.Peek();
-                        if(t is NawiasLewy)
-                        {
-                            TokenStack.Pop();
-                            break;
-                        }
-                        else if(!(t is NawiasLewy))
-                        {
-                            // OPERATORY NA WY
-                            Token obj = TokenStack.Pop();
-                            ONP.Enqueue(obj);
-                            ONPstring += ((Operator)obj).Symbol;                            
-                        }
+                        string Typex = tmp.GetType().Name;
+                        // To Cyfra Całkowita Yay !
+                        // Prześlij na wyjście
+                        ONPstring += ((Cyfra)tmp).Value + " ";
+                        ONP.Enqueue(tmp);
                     }
-                    continue;
-                }
-                if(tmp is ArithmeticOperators)
-                {                    
-                    while (TokenStack.Count() > 0)
-                    {
-                        // Na stosie możemy napotkać nawiasy 
-                        // Możemy rzutować bo każdy operator dziedziczy po Operator
-                        Operator t = (Operator)TokenStack.Peek(); 
-                        Operator t2 = (Operator)tmp;                        
-                        
-                        if((t.GetPriority() > t2.GetPriority() || t.GetPriority() == t2.GetPriority() )  )
-                        {
-                            Operator wy = (Operator)TokenStack.Pop();
-                            ONP.Enqueue(wy);
-                            ONPstring += wy.Symbol;
-                        }
-                        else
-                        {
-                            TokenStack.Push(tmp);
-                            break;
-                        }
+                    if (tmp is NawiasLewy) {
+                        TokenStack.Push(tmp);
+                        continue;
                     }
-                    if (TokenStack.Count() == 0) { TokenStack.Push(tmp); };
-                    continue;
+                    if (tmp is NawiasPrawy) {
+
+                        while (TokenStack.Count() > 0) {
+                            Token t = TokenStack.Peek();
+                            if (t is NawiasLewy) {
+                                TokenStack.Pop();
+                                break;
+                            }
+                            else if (!(t is NawiasLewy)) {
+                                // OPERATORY NA WY
+                                Token obj = TokenStack.Pop();
+                                ONP.Enqueue(obj);
+                                ONPstring += ((Operator)obj).Symbol;
+                            }
+                        }
+                        continue;
+                    }
+                    if (tmp is ArithmeticOperators) {
+                        while (TokenStack.Count() > 0) {
+                            // Na stosie możemy napotkać nawiasy 
+                            // Możemy rzutować bo każdy operator dziedziczy po Operator
+                            Operator t = (Operator)TokenStack.Peek();
+                            Operator t2 = (Operator)tmp;
+
+                            if ((t.GetPriority() > t2.GetPriority() || t.GetPriority() == t2.GetPriority())) {
+                                Operator wy = (Operator)TokenStack.Pop();
+                                ONP.Enqueue(wy);
+                                ONPstring += wy.Symbol;
+                            }
+                            else {
+                                TokenStack.Push(tmp);
+                                break;
+                            }
+                        }
+                        if (TokenStack.Count() == 0) { TokenStack.Push(tmp); };
+                        continue;
+                    }
                 }
-            }
+            
+           
             if(TokenStack.Count() > 0)
             {
                 while(TokenStack.Count() > 0)
@@ -417,6 +410,7 @@ namespace ONP
                     ONPstring +=((Operator)t).Symbol;
                 }
             }
+            return true;
         }
         public void ONPResult()
         {
@@ -428,6 +422,7 @@ namespace ONP
         
         Stack<Token> HelpStack;
         Queue<Token> ONPTokens;
+        
         public ONP(string Equation) // min Liczba , Operator , Liczba np. 2 + 2 , 2 ^ 7 , sin(2) + 3
         {
             InfixNotationTokenizer InfixTokens = new InfixNotationTokenizer(Equation);
@@ -438,32 +433,35 @@ namespace ONP
         {
 
         }
-        public Number ONPCalculationResult()
+        public String ONPCalculationResult()
         {           
             Number ONPresult = new Number("WynikOperacjiArytmetycznej");
-            foreach(Token t in ONPTokens)
-            {
-                if( !(t is Number) )
-                {
-                    // Pobierz A i B ze stosu 
-                    Number b = (Number)HelpStack.Pop();  // a
-                    Number a = (Number)HelpStack.Pop();  // b
-                    Number w;
-                    ArithmeticOperators op = (ArithmeticOperators)t;                    
-                    w = op.OperatorResult(a, b);
-                    HelpStack.Push(w);                    
-                    Console.WriteLine("Wykonuje Operacje na lczbach " + a.Value +" "+op.Symbol + " " + b.Value + " = " + w.Value);
-                    
+            try {
+                foreach (Token t in ONPTokens) {
+                    if (!(t is Number)) {
+                        // Pobierz A i B ze stosu 
+                        Number b = (Number)HelpStack.Pop();  // a
+                        Number a = (Number)HelpStack.Pop();  // b
+                        Number w;
+                        ArithmeticOperators op = (ArithmeticOperators)t;
+                        w = op.OperatorResult(a, b);
+                        HelpStack.Push(w);
+                        Console.WriteLine("Wykonuje Operacje na lczbach " + a.Value + " " + op.Symbol + " " + b.Value + " = " + w.Value);
+
+                    }
+                    else if (t is Number) {
+                        // Prześlij liczbe na stos
+                        HelpStack.Push(t);
+                    }
+
                 }
-                else if(t is Number)
-                {
-                    // Prześlij liczbe na stos
-                    HelpStack.Push(t);
-                }
-               
+            }
+            catch(InvalidOperationException e) {
+                // error
+                return "ERROR";
             }
             ONPresult = (Number)HelpStack.Pop();
-            return ONPresult;
+            return ONPresult.Value.ToString();
         }
 
     }

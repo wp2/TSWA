@@ -41,7 +41,7 @@
         <!-- Wyświetlanie operacji -->
         <Border Grid.ColumnSpan="6" Grid.Row="0" BorderThickness="0" BorderBrush="Black">
             <TextBlock Name="Displayer" Background="White" TextAlignment="Right" FontSize="45" VerticalAlignment="Center" Margin="15,0,15,0"
-                       Text="0"/>
+                       />
         </Border>
         
 
@@ -56,7 +56,7 @@
         <Button Grid.Column="1" Grid.Row="5" Style="{StaticResource FirstTwoRowsButtonStyle}"></Button>
 
         <Border Grid.Column="2" Grid.Row="5" Grid.ColumnSpan="2" BorderThickness="0,1,0,0" BorderBrush="#CCCCCC">
-            <Button  Margin="25,0,25,0" Style="{StaticResource WordButtonStyle}" >QWORD</Button>
+            <Button  Margin="25,0,25,0" Style="{StaticResource WordButtonStyle}" Click="Word_Button_Click" >QWORD</Button>
         </Border>
         
         <Button Grid.Column="4" Grid.Row="5" Style="{StaticResource FirstTwoRowsButtonStyle}">MS</Button>
@@ -75,8 +75,8 @@
         <Button Grid.Column="0" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}"></Button>
         <Button Grid.Column="1" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontSize="14">Mod</Button>
         <Button Grid.Column="2" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" FontSize="14">CE</Button>
-        <Button Grid.Column="3" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" FontSize="14">C</Button>
-        <Button Grid.Column="4" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold"  FontSize="14">Del</Button>
+        <Button Grid.Column="3" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" FontSize="14" Click="Clear_Button_Click">C</Button>
+        <Button Grid.Column="4" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold"  FontSize="14" Click="Del_Button_Click">Del</Button>
         <Button Grid.Column="5" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}">/</Button>
 
         <!-- 3. wiersz -->
@@ -109,7 +109,7 @@
         <Button Grid.Column="2" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" >+/-</Button>
         <Button Grid.Column="3" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold"  Tag ="0" Click="Numeric_Button_Click">0</Button>
         <Button Grid.Column="4" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold">,</Button>
-        <Button Grid.Column="5" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}">=</Button>
+        <Button Grid.Column="5" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" Click="Equal_Button_Click">=</Button>
 
         <!--
         <Button Height="50" Width="50" Click="Button_Click" Content="{Binding ElementName=textBox, Path=Text}" Margin="60.23,260,30,259" Grid.Column="1"/>
