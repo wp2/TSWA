@@ -19,31 +19,31 @@ namespace TSWA
         // Zarządza Logiką aplikacji 
         public void Init()
         {
-            // Ustaw stany początkowe wpisane/ z pliku ?
-            FileStream FileInput = new FileStream("KalkulatorUstawienia.xml",FileMode.Open);
-            XmlReader xml = XmlReader.Create(FileInput);
-            while(xml.Read())
-            {
-                if(xml.Name == "InitialState")
-                {
-                    while(xml.Read())
-                    {
-                        if (xml.Name == "CurrentEquationState" && xml.NodeType != XmlNodeType.EndElement)
-                        {
-                            xml.Read();
-                            this.CurrentEquationState = xml.Value;
-                        }
-                        if (xml.Name == "CurrentNumberBaseSystem" && xml.NodeType != XmlNodeType.EndElement)
-                        {
-                            xml.Read();
-                            this.CurrentNumberBaseSystem = Int32.Parse(xml.Value);
-                        }
+            //// Ustaw stany początkowe wpisane/ z pliku ?
+            //FileStream FileInput = new FileStream("KalkulatorUstawienia.xml",FileMode.Open);
+            //XmlReader xml = XmlReader.Create(FileInput);
+            //while(xml.Read())
+            //{
+            //    if(xml.Name == "InitialState")
+            //    {
+            //        while(xml.Read())
+            //        {
+            //            if (xml.Name == "CurrentEquationState" && xml.NodeType != XmlNodeType.EndElement)
+            //            {
+            //                xml.Read();
+            //                this.CurrentEquationState = xml.Value;
+            //            }
+            //            if (xml.Name == "CurrentNumberBaseSystem" && xml.NodeType != XmlNodeType.EndElement)
+            //            {
+            //                xml.Read();
+            //                this.CurrentNumberBaseSystem = Int32.Parse(xml.Value);
+            //            }
                         
-                    }
-                }
-            }
-            xml.Close();
-            FileInput.Close();
+            //        }
+            //    }
+            //}
+            //xml.Close();
+            //FileInput.Close();
             
         }
 
