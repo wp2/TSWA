@@ -302,14 +302,14 @@ namespace _ONP
             Console.WriteLine("RegEx String: " + this);
             Queue<Token> Tokens = new Queue<Token>();
             // string expr = @"(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^)|([0-9]+)|sqrt\([\d]\)";
-            string expr = @"([A-Z a-z]+\([\d\,?]+\))|(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^|\/)|([0-9\.]+)";
+            string expr = @"([A-Z a-z]+\([\d\,?]+\))|(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^|\/)|(\d+%\d+)|([0-9\.]+)";
             string func = @"([\w]+)(([0-9]*)|([0-9]*))";
             MatchCollection mc = Regex.Matches(this.Equation, expr);
+           
             foreach (Match m in mc)
             {
                 Decimal tmp;
-                if(m.Value.ToString() == " ") { continue; }
-                if(m.Value.ToString().Contains("sqrt")) { Console.Write("SQRT => "); }
+                if(m.Value.ToString() == " ") { continue; }                
                 if (m.Value.ToString() == "(") Tokens.Enqueue(new NawiasLewy());
                 if (m.Value.ToString() == ")") Tokens.Enqueue(new NawiasPrawy());
                 if(m.Value.ToString() == "+") Tokens.Enqueue(new Dodawanie());
@@ -317,6 +317,7 @@ namespace _ONP
                 if(m.Value.ToString() == "*") Tokens.Enqueue(new Mnożenie());
                 if(m.Value.ToString() == "/") Tokens.Enqueue(new Dzielenie());
                 if(m.Value.ToString() == "^") Tokens.Enqueue(new Potęga());
+                if(m.Value.ToString().Contains("%")) // Enqueue Modulo
                 if(Decimal.TryParse(m.Value.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tmp)) Tokens.Enqueue(new Cyfra("Cyfra", tmp));
                 if(DevOutput)Console.WriteLine(m);
             }

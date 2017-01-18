@@ -9,7 +9,7 @@ using _ONP;
 
 namespace TSWA
 {
-    class LogicController
+    public class LogicController
     {
         enum CurrentNumberBaseSystem { Binary, Octal, Decimal, Hexadecimal };
 
