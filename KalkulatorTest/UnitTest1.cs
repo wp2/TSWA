@@ -109,5 +109,68 @@ namespace KalkulatorTest
             Assert.AreEqual(expected, Decimal.Parse(onpResult));
 
         }
+
+        [TestMethod]
+        public void TestBinaryAND()
+        {
+            long number = 4000000000;            
+            LogicalOperations logic = new LogicalOperations(number);
+            logic.PreformAND(5);
+            Assert.AreEqual(number & 5, logic.ConvertToDecimal());
+        }
+
+        [TestMethod]
+        public void TestBinaryOR()
+        {
+            long number = 4000000000;            
+            LogicalOperations logic = new LogicalOperations(number);
+            logic.PreformOR(5);
+            Assert.AreEqual(number | 5, logic.ConvertToDecimal());
+        }
+
+        [TestMethod]
+        public void TestBinaryXOR()
+        {
+            long number = 4000000000;          
+            LogicalOperations logic = new LogicalOperations(number);
+            logic.PreformXOR(5);
+            Assert.AreEqual(number ^ 5, logic.ConvertToDecimal());
+        }
+
+        [TestMethod]
+        public void TestBinaryNOT()
+        {
+            long number = 4000000000;           
+            LogicalOperations logic = new LogicalOperations(number);
+            logic.PreformNOT();
+            Assert.AreEqual(~number, logic.ConvertToDecimal());
+        }
+
+        [TestMethod]
+        public void TestBinaryString()
+        {
+            long number = 4000000000;            
+            String binaryRepresentation = Convert.ToString(number, 2);
+            LogicalOperations logic = new LogicalOperations(number);            
+            Assert.AreEqual(binaryRepresentation, logic.ConvertToBinary());
+        }
+
+        [TestMethod]
+        public void TestHexString()
+        {
+            long number = 4000000000;
+            String hexRepresentation = Convert.ToString(number, 16);
+            LogicalOperations logic = new LogicalOperations(number);
+            Assert.AreEqual(hexRepresentation, logic.ConvertToHex());
+        }
+
+        [TestMethod]
+        public void TestOctalString()
+        {
+            long number = 4000000000;
+            String octalRepresentation = Convert.ToString(number, 8);
+            LogicalOperations logic = new LogicalOperations(number);
+            Assert.AreEqual(octalRepresentation, logic.ConvertToOctal());
+        }
     }
 }

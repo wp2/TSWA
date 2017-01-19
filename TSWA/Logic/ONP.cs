@@ -40,6 +40,7 @@ namespace _ONP
         // jednakże implementacja tej metody zależy od konkretnego oiektu
 
     }
+
     abstract class Function : Number // Funkcje Sin,Cos,SQRT .....
     {
         protected Decimal[] FunctionParams; // Parametry Funkcji (a,b .......)
@@ -51,6 +52,7 @@ namespace _ONP
         public abstract void CalculateFunction();
         
     }    
+
     abstract class Operator : Token  // Operatory + , - ,* , /
     {
         int Priority;
@@ -73,6 +75,7 @@ namespace _ONP
         //abstract public Number<V> OperatorResult<V>(Number<V> p1, Number<V> p2);
         
     }
+
     abstract class ArithmeticOperators : Operator
     {
         public ArithmeticOperators(string Name, int Priority, char Symbol, int Associativity) : base(Name, Priority, Symbol, Associativity)
@@ -81,6 +84,7 @@ namespace _ONP
         }
         abstract public Number OperatorResult(Number p1, Number p2);
     }
+
     abstract class SpecialOperator : Operator
     {
         // Klasa ta jest przeznaczona dla operatrów specjalnych czyli takich które pełnią jakąś rolę podczas parsowania
@@ -104,6 +108,7 @@ namespace _ONP
         }
        
     }
+
     class NawiasPrawy : SpecialOperator
     {
         public NawiasPrawy(string Name = "NawiasPrawy", int Priority = 0,
@@ -111,6 +116,7 @@ namespace _ONP
         {
         }
     }
+
     class Dodawanie : ArithmeticOperators
     {
         public Dodawanie(string Name = "Dodawanie", int Priority = 1,
@@ -123,6 +129,7 @@ namespace _ONP
             return new Number("WynikOperacji", (Decimal)p1.Value + p2.Value);
         }        
     }
+
     class Odejmowanie : ArithmeticOperators
     {
         public Odejmowanie(string Name = "Odejmowanie", int Priority = 1,
@@ -135,6 +142,7 @@ namespace _ONP
         }
 
     }
+
     class Mnożenie : ArithmeticOperators
     {
         public Mnożenie(string Name = "Mnożenie", int Priority = 2,
@@ -146,6 +154,7 @@ namespace _ONP
             return new Number("WynikOperacji", (Decimal)p1.Value * p2.Value);
         }        
     }
+
     class Dzielenie : ArithmeticOperators
     {
         public Dzielenie(string Name = "Dzielenie", int Priority = 2,
@@ -157,6 +166,7 @@ namespace _ONP
             return new Number("WynikOperacji", (Decimal)p1.Value / p2.Value);
         }       
     }
+
     class Potęga : ArithmeticOperators
     {
         public Potęga(string Name = "Potęga", int Priority = 3,
@@ -172,6 +182,7 @@ namespace _ONP
             return new Number("WynikOperacji", (Decimal)result );
         }
     }
+
     class Cyfra : Number
     {
         public Cyfra(string Name, Decimal value) : base(Name, value)
@@ -189,6 +200,7 @@ namespace _ONP
             return 0;
         }       
     }
+
     class Pierwiastek : Operator
     {
         public Pierwiastek(string Name = "Pierwiastek", int Priority = 3
@@ -196,6 +208,7 @@ namespace _ONP
         {
         }
     }
+
     class Modulo : Function
     {       
         public Modulo(string Name, Decimal[] Params) : base(Name, Params)
@@ -260,6 +273,7 @@ namespace _ONP
             return Tokens;
         }
     }
+
     class TransformToONP
     {
         // klasa transformująca listę tokenów do poprawnie uporządkowanej listy tokenów zgodnie z notacją ONP za pomocą shunting yard algorithm
@@ -354,6 +368,7 @@ namespace _ONP
             Console.WriteLine("Notacja ONP = " + ONPstring);
         }
     }
+
     public class ONP
     {
         
@@ -396,6 +411,66 @@ namespace _ONP
             ONPresult = (Number)HelpStack.Pop();
             return ONPresult.Value.ToString();
         }
+
+    }
+
+    public class LogicalOperations
+    {
+        private long decimalValue;       
+
+        public void setDecimalValue(long value)
+        {
+            this.decimalValue = value;
+        }
+
+        public LogicalOperations(long decimalValue) { this.decimalValue = decimalValue; }
+
+        public long ConvertToDecimal()
+        {
+            return decimalValue;
+        }
+
+        public String ConvertToBinary()
+        {
+            return Convert.ToString(decimalValue, 2);
+        }
+
+        public String ConvertToOctal()
+        {
+            return Convert.ToString(decimalValue, 8);
+        }
+
+        public String ConvertToHex()
+        {
+            return Convert.ToString(decimalValue, 16);
+        }
+
+        public void PreformAND(long number)
+        {
+            this.decimalValue = this.decimalValue & number;
+        }
+
+        public void PreformOR(long number)
+        {
+            this.decimalValue = this.decimalValue | number;
+        }
+
+        public void PreformXOR(long number)
+        {
+            this.decimalValue = this.decimalValue ^ number;
+        }
+
+        public void PreformNOT()
+        {
+            this.decimalValue = ~ this.decimalValue;
+        }
+
+
+
+    }
+
+    class ShiftOperations
+    {
 
     }
 }
