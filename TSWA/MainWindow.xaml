@@ -73,11 +73,11 @@
 
         <!-- 2. wiersz -->
         <Button Grid.Column="0" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}"></Button>
-        <Button Grid.Column="1" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontSize="14">Mod</Button>
+        <Button Grid.Column="1" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" Tag="%" FontSize="14" Click="Sign_Button_Click">Mod</Button>
         <Button Grid.Column="2" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" FontSize="14">CE</Button>
         <Button Grid.Column="3" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" FontSize="14" Click="Clear_Button_Click">C</Button>
         <Button Grid.Column="4" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold"  FontSize="14" Click="Del_Button_Click">Del</Button>
-        <Button Grid.Column="5" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}">/</Button>
+        <Button Grid.Column="5" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" Tag="/" Click="Sign_Button_Click">/</Button>
 
         <!-- 3. wiersz -->
         <Button Grid.Column="0" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="A" Click="Numeric_Button_Click" IsEnabled="False">A</Button>
@@ -85,7 +85,7 @@
         <Button Grid.Column="2" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="7" Click="Numeric_Button_Click">7</Button>
         <Button Grid.Column="3" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="8" Click="Numeric_Button_Click">8</Button>
         <Button Grid.Column="4" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="9" Click="Numeric_Button_Click">9</Button>
-        <Button Grid.Column="5" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}">X</Button>
+        <Button Grid.Column="5" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" Tag="*" Click="Sign_Button_Click">X</Button>
 
         <!-- 4. wiersz -->
         <Button Grid.Column="0" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="C" Click="Numeric_Button_Click" IsEnabled="False">C</Button>
@@ -93,7 +93,7 @@
         <Button Grid.Column="2" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="4" Click="Numeric_Button_Click">4</Button>
         <Button Grid.Column="3" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="5" Click="Numeric_Button_Click">5</Button>
         <Button Grid.Column="4" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="6" Click="Numeric_Button_Click">6</Button>
-        <Button Grid.Column="5" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}">-</Button>
+        <Button Grid.Column="5" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" Tag="-" Click="Sign_Button_Click">-</Button>
 
         <!-- 5. wiersz -->
         <Button Grid.Column="0" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="E" Click="Numeric_Button_Click" IsEnabled="False">E</Button>
@@ -101,7 +101,7 @@
         <Button Grid.Column="2" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="1" Click="Numeric_Button_Click">1</Button>
         <Button Grid.Column="3" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="2" Click="Numeric_Button_Click">2</Button>
         <Button Grid.Column="4" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="3" Click="Numeric_Button_Click">3</Button>
-        <Button Grid.Column="5" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}">+</Button>
+        <Button Grid.Column="5" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" Tag="+" Click="Sign_Button_Click">+</Button>
 
         <!-- 6. wiersz -->
         <Button Grid.Column="0" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold">(</Button>
