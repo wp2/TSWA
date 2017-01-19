@@ -83,7 +83,8 @@ namespace TSWA
 
         public void OnEqualButtonClick()
         {
-            CurrentEquationState = "2 + 16 - 9 ";
+            Console.WriteLine("2 mod 2 = " + 2 % 2 + " expected = 1");
+            CurrentEquationState = "2%8 ";
             ONP myONP = new ONP(CurrentEquationState);
             CurrentEquationState = myONP.ONPCalculationResult();
             int t = 5;

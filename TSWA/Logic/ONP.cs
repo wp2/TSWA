@@ -212,80 +212,7 @@ namespace _ONP
     /********************************************************************/
 
     class InfixNotationTokenizer // Stokenizuj notacje infix ma uporządkowaną listę tokenów
-    {
-        /*public Queue<Token> TokenizeEquation(string Equation)
-        {
-            Queue<Token> Tokens = new Queue<Token>();
-            for (int i = 0; i < Equation.Length; i++)
-            {
-                // Iteracja po stringu
-                if (Equation[i] == ' ') continue;
-                if (Equation[i] == '(') Tokens.Enqueue(new NawiasLewy()); // Token jest zdefiniowany wyżej za pomocą konstruktora z
-                // parametrami domyślnymi
-                if (Equation[i] == ')') Tokens.Enqueue(new NawiasPrawy());
-                if (Equation[i] == '+') Tokens.Enqueue(new Dodawanie());
-                if (Equation[i] == '-') Tokens.Enqueue(new Odejmowanie());
-                if (Equation[i] == '*') Tokens.Enqueue(new Mnożenie());
-                if (Equation[i] == '/') Tokens.Enqueue(new Dzielenie());
-                if (Equation[i] == '^') Tokens.Enqueue(new Potęga());
-                if (Char.IsNumber(Equation[i]) && i < Equation.Length - 2)
-                {
-                    string Number = "";
-                    Number += Equation[i];
-                    for (int j = i + 1; j < Equation.Length; j++)
-                    {
-                        if (Char.IsNumber(Equation[j]) || Equation[j] == '.')
-                        {
-                            Number += Equation[j];
-                            i = j;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    //Tokens.Enqueue(new CyfraCałkowita("CyfraCałkowita", Int32.Parse(Number)));
-                    Tokens.Enqueue(new Cyfra("CyfraCałkowita",Int32.Parse(Number)));
-                }
-                else if (Char.IsNumber(Equation[i]))
-                {
-                    Tokens.Enqueue(new Cyfra("CyfraCałkowita", Int32.Parse(Char.ToString(Equation[i]))));
-                }
-                if(Char.IsLetter(Equation[i])) // to jest funkcja  np. sqrt(a)
-                {
-                    
-                    string Func = "";
-                    List<Decimal> Params;                   
-                    Func += Equation[i];
-                    for (int j = i + 1; j < Equation.Length; j++)
-                    {
-                        if (Char.IsLetter(Equation[j]))
-                        {
-                            Func += Equation[j]; // Kiedy jest kolejną literą 
-                            i = j;
-                        }
-                        if (Equation[j] == '(')
-                        {
-                            // zaczynamy czytanie parametrów 
-                            while(Equation[j] != ')') // Dopóki nie napotkamy ) co oznacza koniec podawania parametrów
-                            {
-                                if(Equation[j] == ',') { } // Koniec tego parametru
-                            }
-                            //i = j;
-                        }
-
-                        
-                    }
-                    //Tokens.Enqueue(new CyfraCałkowita("CyfraCałkowita", Int32.Parse(Number)));
-                    Tokens.Enqueue(new Cyfra("CyfraCałkowita", Decimal.Parse(Char.ToString(Equation[i]))));
-                }
-
-
-
-            }
-            return Tokens; // stokenizowana notacja infix na nej wykonamy shunting yard algorithm
-        }  */
-        
+    {      
         string Equation;
         public InfixNotationTokenizer(string equation)
         {
@@ -297,26 +224,12 @@ namespace _ONP
         public Queue<Token> GetInfixNotationTokens()
         {
             return InfixNotationTokens;
-        }
-
-        public void AddSymbol(string equation)
-        {
-            //Equation += equation;
-        }
-
-        public void ClearSymbol()
-        {
-            /*if(Equation.Length == 1 && Equation != "0")
-            {
-                Equation = "";
-            }*/
-        }
+        }      
 
         public Queue<Token> TokenizeEquation(bool DevOutput = false) // V2 używa regex 
         {
             Console.WriteLine("RegEx String: " + this);
             Queue<Token> Tokens = new Queue<Token>();
-            // string expr = @"(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^)|([0-9]+)|sqrt\([\d]\)";
             string expr = @"([A-Z a-z]+\([\d\,?]+\))|(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^|\/)|(\d+\s{0,}%\s{0,}\d+)|([0-9\.]+)";
             string func = @"([\w]+)(([0-9]*)|([0-9]*))";
             MatchCollection mc = Regex.Matches(this.Equation, expr);
@@ -333,12 +246,12 @@ namespace _ONP
                 if(m.Value.ToString() == "*") Tokens.Enqueue(new Mnożenie());
                 if(m.Value.ToString() == "/") Tokens.Enqueue(new Dzielenie());
                 if(m.Value.ToString() == "^") Tokens.Enqueue(new Potęga());
-                if (m.Value.ToString().Contains("%"))
-                {
-                    // Enqueue Modulo
-                    // Pobierz dwie wartości i stwórz obiekt modulo
-                    MatchCollection FuncParams = Regex.Matches(m.Value.ToString(), @"(\d+)\s{0,}%\s{0,}(\d+)");
-                    Tokens.Enqueue(new Modulo("modulo", new Decimal[] { Decimal.Parse(FuncParams[0].Value), Decimal.Parse(FuncParams[1].Value) }));
+                if(m.Value.ToString().Contains("%"))
+                {                    
+                    Match FuncParams = Regex.Match(m.Value.ToString(), @"(\d+)\s{0,}%\s{0,}(\d+)",RegexOptions.IgnoreCase);                                       
+                    Modulo mod = new Modulo("modulo", new Decimal[] { Decimal.Parse(FuncParams.Groups[1].Value), Decimal.Parse(FuncParams.Groups[2].Value) });
+                    mod.CalculateFunction();                   
+                    Tokens.Enqueue(mod);
                 }
                 if (Decimal.TryParse(m.Value.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tmp)) Tokens.Enqueue(new Cyfra("Cyfra", tmp));
                 if(DevOutput)Console.WriteLine(m);
@@ -378,7 +291,7 @@ namespace _ONP
                         string Typex = tmp.GetType().Name;
                         // To Cyfra Całkowita Yay !
                         // Prześlij na wyjście
-                        ONPstring += ((Cyfra)tmp).Value + " ";
+                        //ONPstring += ((Cyfra)tmp).Value + " ";
                         ONP.Enqueue(tmp);
                     }
                     if (tmp is NawiasLewy) {
@@ -452,11 +365,7 @@ namespace _ONP
             InfixNotationTokenizer InfixTokens = new InfixNotationTokenizer(Equation);
             this.ONPTokens = (new TransformToONP(InfixTokens.GetInfixNotationTokens())).ONP;
             HelpStack = new Stack<Token>();
-        }
-        //public ONP(TransformToONP OnpNotation)
-        //{
-
-        //}
+        }       
         public String ONPCalculationResult()
         {           
             Number ONPresult = new Number("WynikOperacjiArytmetycznej");
