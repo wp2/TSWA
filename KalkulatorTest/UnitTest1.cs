@@ -172,5 +172,28 @@ namespace KalkulatorTest
             LogicalOperations logic = new LogicalOperations(number);
             Assert.AreEqual(octalRepresentation, logic.ConvertToOctal());
         }
+
+        [TestMethod]
+        public void TestSHL()
+        {
+            long number = 4000000000;
+            long expectedAfterShift = 128000000000;
+            String binaryRepresentation = Convert.ToString(expectedAfterShift, 2);
+            ShiftOperations BitShift = new ShiftOperations(number);
+            BitShift.ShiftLeft(5);
+            Assert.AreEqual(binaryRepresentation, BitShift.ConvertToBinary());
+        }
+
+        [TestMethod]
+        public void TestSHR()
+        {
+            long number = 4000000000;
+            long expectedAfterShift = 125000000;
+            String binaryRepresentation = Convert.ToString(expectedAfterShift, 2);
+            ShiftOperations BitShift = new ShiftOperations(number);
+            BitShift.ShiftRight(5);
+            Assert.AreEqual(binaryRepresentation, BitShift.ConvertToBinary());
+        }
+
     }
 }

@@ -465,12 +465,47 @@ namespace _ONP
             this.decimalValue = ~ this.decimalValue;
         }
 
-
-
     }
 
-    class ShiftOperations
+    public class ShiftOperations
     {
+        long decimalValue;
+
+        public ShiftOperations(long value)
+        {
+            this.decimalValue = value;
+        }  
+
+        public void ShiftRight(int bits)
+        {
+            this.decimalValue = this.decimalValue >> bits;
+        }
+
+        public void ShiftLeft(int bits)
+        {
+            this.decimalValue = this.decimalValue << bits;
+        }
+
+        public long ConvertToDecimal()
+        {
+            return decimalValue;
+        }
+
+        public String ConvertToBinary()
+        {
+            return Convert.ToString(decimalValue, 2);
+        }
+
+        public String ConvertToOctal()
+        {
+            return Convert.ToString(decimalValue, 8);
+        }
+
+        public String ConvertToHex()
+        {
+            return Convert.ToString(decimalValue, 16);
+        }
+
 
     }
 }
