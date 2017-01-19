@@ -25,6 +25,7 @@ namespace _ONP
     
     class Number : Token // Każda liczba 
     {
+        
         public Decimal Value;
         public Number(string Name):base(Name) { } // Kiedy obliczamy wynik wyrażeń czy to operatorów czy całej notcji ONP
         //możemy użyć tej klasy do reprezentacji wyniku
@@ -39,14 +40,15 @@ namespace _ONP
         // jednakże implementacja tej metody zależy od konkretnego oiektu
 
     }
-    abstract class Functions : Token // Funkcje Sin,Cos,SQRT .....
+    abstract class Function : Number // Funkcje Sin,Cos,SQRT .....
     {
         protected Decimal[] FunctionParams; // Parametry Funkcji (a,b .......)
-        public Functions(string Name) : base(Name)
+        public Function(string Name,Decimal [] Params) : base(Name)
         {
-
+            this.FunctionParams = Params;
         }
-        public abstract Number FunctionsResult();
+        // In this function we set Value that is in Number class
+        public abstract void CalculateFunction();
         
     }    
     abstract class Operator : Token  // Operatory + , - ,* , /
@@ -194,8 +196,21 @@ namespace _ONP
         {
         }
     }
+    class Modulo : Function
+    {       
+        public Modulo(string Name, Decimal[] Params) : base(Name, Params)
+        {           
+        }
+
+        public override void CalculateFunction()
+        {
+            this.Value = new Decimal(Decimal.ToInt32(this.FunctionParams[0]) % Decimal.ToInt32(this.FunctionParams[1]));            
+        }
+
+       
+    }
     /********************************************************************/
-   
+
     class InfixNotationTokenizer // Stokenizuj notacje infix ma uporządkowaną listę tokenów
     {
         /*public Queue<Token> TokenizeEquation(string Equation)
@@ -302,12 +317,13 @@ namespace _ONP
             Console.WriteLine("RegEx String: " + this);
             Queue<Token> Tokens = new Queue<Token>();
             // string expr = @"(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^)|([0-9]+)|sqrt\([\d]\)";
-            string expr = @"([A-Z a-z]+\([\d\,?]+\))|(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^|\/)|(\d+%\d+)|([0-9\.]+)";
+            string expr = @"([A-Z a-z]+\([\d\,?]+\))|(\,|\(|\)|(-?\d*\.?\d+e[+-]?\d+)|\+|\-|\*|\^|\/)|(\d+\s{0,}%\s{0,}\d+)|([0-9\.]+)";
             string func = @"([\w]+)(([0-9]*)|([0-9]*))";
             MatchCollection mc = Regex.Matches(this.Equation, expr);
            
             foreach (Match m in mc)
             {
+               
                 Decimal tmp;
                 if(m.Value.ToString() == " ") { continue; }                
                 if (m.Value.ToString() == "(") Tokens.Enqueue(new NawiasLewy());
@@ -317,8 +333,14 @@ namespace _ONP
                 if(m.Value.ToString() == "*") Tokens.Enqueue(new Mnożenie());
                 if(m.Value.ToString() == "/") Tokens.Enqueue(new Dzielenie());
                 if(m.Value.ToString() == "^") Tokens.Enqueue(new Potęga());
-                if(m.Value.ToString().Contains("%")) // Enqueue Modulo
-                if(Decimal.TryParse(m.Value.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tmp)) Tokens.Enqueue(new Cyfra("Cyfra", tmp));
+                if (m.Value.ToString().Contains("%"))
+                {
+                    // Enqueue Modulo
+                    // Pobierz dwie wartości i stwórz obiekt modulo
+                    MatchCollection FuncParams = Regex.Matches(m.Value.ToString(), @"(\d+)\s{0,}%\s{0,}(\d+)");
+                    Tokens.Enqueue(new Modulo("modulo", new Decimal[] { Decimal.Parse(FuncParams[0].Value), Decimal.Parse(FuncParams[1].Value) }));
+                }
+                if (Decimal.TryParse(m.Value.ToString(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out tmp)) Tokens.Enqueue(new Cyfra("Cyfra", tmp));
                 if(DevOutput)Console.WriteLine(m);
             }
             this.InfixNotationTokens = Tokens;
@@ -350,8 +372,9 @@ namespace _ONP
             TokenStack = new Stack<Token>();
             
                 foreach (Token tmp in InfixTokens) {
-                    if (tmp is Number) // Liczba
+                    if (tmp is Number ) // Liczba
                     {
+                        
                         string Typex = tmp.GetType().Name;
                         // To Cyfra Całkowita Yay !
                         // Prześlij na wyjście
@@ -418,7 +441,7 @@ namespace _ONP
             Console.WriteLine("Notacja ONP = " + ONPstring);
         }
     }
-    class ONP
+    public class ONP
     {
         
         Stack<Token> HelpStack;
@@ -430,10 +453,10 @@ namespace _ONP
             this.ONPTokens = (new TransformToONP(InfixTokens.GetInfixNotationTokens())).ONP;
             HelpStack = new Stack<Token>();
         }
-        public ONP(TransformToONP OnpNotation)
-        {
+        //public ONP(TransformToONP OnpNotation)
+        //{
 
-        }
+        //}
         public String ONPCalculationResult()
         {           
             Number ONPresult = new Number("WynikOperacjiArytmetycznej");
