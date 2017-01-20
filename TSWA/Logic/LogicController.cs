@@ -167,20 +167,10 @@ namespace TSWA
         /* Dodaje znak do dzialania */
         public void AddSignToEquation(char Operator)
         {
-            bool bFound = false;
-            foreach(char sign in SignsArray) {
-                if (CurrentEquationState[CurrentEquationState.Length - 1] == sign) {
-                    CurrentEquationState = CurrentEquationState.Remove(CurrentEquationState.Length - 1, 1);
-                    CurrentEquationState += Operator;
-                    bFound = true;
-                    break;
-                }
+            if(true == CurrentEquationState[CurrentEquationState.Length - 1].IsMathematicalOperator()) {
+                CurrentEquationState = CurrentEquationState.Remove(CurrentEquationState.Length - 1, 1);
             }
-            
-            if (false == bFound) {
-                CurrentEquationState += Operator;
-            }
-
+            CurrentEquationState += Operator;
             UpdateDisplay(this, eUpdateArgs);
         }
 
@@ -204,7 +194,6 @@ namespace TSWA
                         CurrentEquationState += Parenthesis;
                     } 
                 }
-                
             }
             UpdateDisplay(this, eUpdateArgs);
         }
