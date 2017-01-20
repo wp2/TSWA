@@ -98,6 +98,10 @@ namespace TSWA
         /* Obecne dzialanie matematyczne */
         string CurrentEquationState;
 
+        /* Zestaw dostepnych dlugosci slow i zmienna przechowujaca obecna dlugosc slowa */
+        public enum WordLengths { BYTE = 8, WORD = 16, DWORD = 32, QWORD = 64 };
+        WordLengths CurrentWordLength;
+
         
         public LogicController() {
             Init();
@@ -127,7 +131,10 @@ namespace TSWA
                             xml.Read();
                             CurrentFontColor = new BrushConverter().ConvertFromString(xml.Value) as SolidColorBrush;  
                         }
-
+                        else if(xml.Name == "CurrentWordLength" && xml.NodeType != XmlNodeType.EndElement) {
+                            xml.Read();
+                            CurrentWordLength = (WordLengths)Enum.Parse(typeof(WordLengths), xml.Value);
+                        }
                     }
                 }
             }
@@ -180,7 +187,8 @@ namespace TSWA
             int numberOfClosingdParenthesis = CurrentEquationState.Split(')').Length - 1;
             if (Parenthesis == ')') {
                 if (numberOfOpeningdParenthesis > numberOfClosingdParenthesis) {
-                    if (true == (CurrentEquationState[CurrentEquationState.Length - 1]).IsHex()) {
+                    if (true == (CurrentEquationState[CurrentEquationState.Length - 1]).IsHex() ||
+                        CurrentEquationState[CurrentEquationState.Length - 1] == ')') {
                         CurrentEquationState += Parenthesis;
                     }
                 }
@@ -216,8 +224,22 @@ namespace TSWA
             return new TextInformation(CurrentEquationState, CurrentFontSize, CurrentFontColor);
         }
 
-        public void onWordButtonClick() {
-
+        /* Zmiana dlugosci uzywanego slowa */
+        public void ChangeWordLength() {
+            switch(CurrentWordLength) {
+                case WordLengths.QWORD:
+                    CurrentWordLength = WordLengths.DWORD;
+                    break;
+                case WordLengths.DWORD:
+                    CurrentWordLength = WordLengths.WORD;
+                    break;
+                case WordLengths.WORD:
+                    CurrentWordLength = WordLengths.BYTE;
+                    break;
+                case WordLengths.BYTE:
+                    CurrentWordLength = WordLengths.QWORD;
+                    break;
+            }
         }
     }
 }

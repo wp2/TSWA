@@ -60,7 +60,7 @@ namespace TSWA {
         }
 
         private void Word_Button_Click(object sender, RoutedEventArgs e) {
-            LogicMaster.onWordButtonClick();
+            LogicMaster.ChangeWordLength();
         }
 
         /* Metoda wywolywana przy nacisnieciu przycisku rownania */
