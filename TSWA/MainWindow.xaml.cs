@@ -59,8 +59,12 @@ namespace TSWA {
             LogicMaster.ClearEquation();
         }
 
+        /* Metoda wywolywana przy nacisnieciu przycisku zmiany dlugosci slowa */
         private void Word_Button_Click(object sender, RoutedEventArgs e) {
-            LogicMaster.ChangeWordLength();
+            TextInformation newTextInformation = LogicMaster.ChangeWordLength();
+            WordButton.Content = newTextInformation.Content;
+            WordButton.FontSize = newTextInformation.FontSize;
+            WordButton.Foreground = newTextInformation.Foreground;
         }
 
         /* Metoda wywolywana przy nacisnieciu przycisku rownania */
@@ -71,7 +75,7 @@ namespace TSWA {
         /* Metoda aktualizacujace wyswietlany tekst */
         private void UpdateDisplay() {
             TextInformation newTextInformation = LogicMaster.GetTextInformation();
-            Displayer.Text = newTextInformation.Equation;
+            Displayer.Text = newTextInformation.Content;
             Displayer.FontSize = newTextInformation.FontSize;
             Displayer.Foreground = newTextInformation.Foreground;
         }
@@ -86,6 +90,7 @@ namespace TSWA {
             MessageBox.Show(e.ToString());
         }
 
+        /* Metoda wywolywana przy nacisnieciu przycisku z nawiasem */
         private void Parenthesis_Button_Click(object sender, RoutedEventArgs e) {
             LogicMaster.AddParenthesisToEquation(((Button)sender).Tag.ToString().ToCharArray()[0]);
         }

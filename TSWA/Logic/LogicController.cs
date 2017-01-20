@@ -11,20 +11,20 @@ namespace TSWA
     /* Struktura przechowujaca info o wyswietlanym tekscie: tresc, rozmiar czcionki, kolor czcionki */
     public struct TextInformation {
 
-        public TextInformation(string a_Equation, LogicController.FontSizes a_FontSize, Brush a_Foreground) {
-            _equation = a_Equation;
+        public TextInformation(string a_Content, LogicController.FontSizes a_FontSize, Brush a_Foreground) {
+            _content = a_Content;
             _fontSize = (int)a_FontSize;
             _foreground = a_Foreground;
             
         }
 
-        private string _equation;
+        private string _content;
         private int _fontSize;
         private Brush _foreground;
 
-        public string Equation {
+        public string Content {
             get {
-                return _equation;
+                return _content;
             }
         }
 
@@ -89,7 +89,7 @@ namespace TSWA
         NumberBaseSystem CurrentNumberBaseSystem;
 
         /* Zestaw dostepnych rozmiarow czcionek i zmienna przechowujaca obecny rozmiar czcionki */
-        public enum FontSizes { VerySmall = 15, Small = 25, Medium = 35, Big = 45, VeryBig = 50 };
+        public enum FontSizes { VerySmall = 12, Small = 25, Medium = 35, Big = 45, VeryBig = 50 };
         FontSizes CurrentFontSize;
 
         /* Obecny kolor czcionki */
@@ -225,7 +225,7 @@ namespace TSWA
         }
 
         /* Zmiana dlugosci uzywanego slowa */
-        public void ChangeWordLength() {
+        public TextInformation ChangeWordLength() {
             switch(CurrentWordLength) {
                 case WordLengths.QWORD:
                     CurrentWordLength = WordLengths.DWORD;
@@ -240,6 +240,7 @@ namespace TSWA
                     CurrentWordLength = WordLengths.QWORD;
                     break;
             }
+            return new TextInformation(CurrentWordLength.ToString(), FontSizes.VerySmall, Brushes.Blue);
         }
     }
 }
