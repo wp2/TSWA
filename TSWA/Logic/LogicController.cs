@@ -51,6 +51,23 @@ namespace TSWA
         }
     }
 
+    /* Klasa rozszerzajaca funkcjonalnosc chara */
+    public static class Extensions {
+        public static bool IsHex(this char c) {
+            return (c >= '0' && c <= '9') ||
+                     (c >= 'a' && c <= 'f') ||
+                     (c >= 'A' && c <= 'F');
+        }
+
+        public static bool IsBinary(this char c) {
+            return (c >= '0' && c <= '1');
+        }
+
+        public static bool IsMathematicalOperator(this char c) {
+            return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%');
+        }
+    }
+
     // Zarządza Logiką aplikacji 
     public class LogicController
     {
@@ -64,6 +81,7 @@ namespace TSWA
         public MyEventArgs eErrorArgs = null;
         public delegate void DisplayErrorInfo(LogicController lc, MyEventArgs eErrorArgs);
 
+        /* Tablica dostpenych operacji matematycznych */
         static char[] SignsArray = { '+', '-', '*', '/', '%' };
 
         /* Zestaw dostepnych systemow liczbowych i zmienna przechowujaca obecny system liczbowy */
@@ -163,6 +181,31 @@ namespace TSWA
                 CurrentEquationState += Operator;
             }
 
+            UpdateDisplay(this, eUpdateArgs);
+        }
+
+        /* Dodaje nawias do dzialania */
+        public void AddParenthesisToEquation(char Parenthesis) {
+            int numberOfOpeningdParenthesis = CurrentEquationState.Split('(').Length - 1;
+            int numberOfClosingdParenthesis = CurrentEquationState.Split(')').Length - 1;
+            if (Parenthesis == ')') {
+                if (numberOfOpeningdParenthesis > numberOfClosingdParenthesis) {
+                    if (true == (CurrentEquationState[CurrentEquationState.Length - 1]).IsHex()) {
+                        CurrentEquationState += Parenthesis;
+                    }
+                }
+            }
+            else {
+                if(CurrentEquationState == "0") {
+                    CurrentEquationState = Parenthesis.ToString();
+                }
+                else {
+                    if (CurrentEquationState[CurrentEquationState.Length - 1].IsMathematicalOperator()) {
+                        CurrentEquationState += Parenthesis;
+                    } 
+                }
+                
+            }
             UpdateDisplay(this, eUpdateArgs);
         }
 

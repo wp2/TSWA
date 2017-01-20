@@ -85,6 +85,10 @@ namespace TSWA {
         private void DisplayMessageBox(LogicController lc, MyEventArgs e) {
             MessageBox.Show(e.ToString());
         }
+
+        private void Parenthesis_Button_Click(object sender, RoutedEventArgs e) {
+            LogicMaster.AddParenthesisToEquation(((Button)sender).Tag.ToString().ToCharArray()[0]);
+        }
     }
 }
 
