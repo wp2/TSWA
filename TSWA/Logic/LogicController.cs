@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media;
+using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Text.RegularExpressions;
 using _ONP;
+using Microsoft.VisualBasic;
 
 namespace TSWA
 {
@@ -39,7 +42,6 @@ namespace TSWA
                 return _foreground;
             }
         }
-
     }
 
     /* Klasa umozliwiajaca przesylanie stringow jako argumenty eventow */
@@ -52,7 +54,7 @@ namespace TSWA
     }
 
     /* Klasa rozszerzajaca funkcjonalnosc chara */
-    public static class Extensions {
+    public static class CharExtensions {
         public static bool IsHex(this char c) {
             return (c >= '0' && c <= '9') ||
                      (c >= 'a' && c <= 'f') ||
@@ -68,24 +70,55 @@ namespace TSWA
         }
     }
 
+    public static class StringExtensions {
+
+        /* Sprawdza czy w stringu znajduje sie jakis operator matematyczny */
+        public static bool IsThereAnyMathematicalOperatorInString(this string strToCheck) {
+            for(int i = 0; i < strToCheck.Length; ++i) {
+                if(true == strToCheck[i].IsMathematicalOperator()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /* Zwraca ostatnia liczbe z dzialania */
+        public static string ExtractLastNumberFromString(this string strToParse) {
+            //var numbers = Regex.Split(strToParse, @"(-?\d+)");
+            var numbers = Regex.Split(strToParse, @"(-?\w*\d*[\w\d]+)");
+            return numbers[numbers.Length - 2];
+        }
+    }
+
     // Zarządza Logiką aplikacji 
     public class LogicController
     {
         /* Event do aktualizacji wyswietlanego tekstu */
         public event UpdateDisplayedText UpdateDisplay;
         public EventArgs eUpdateArgs = null;
-        public delegate void UpdateDisplayedText(LogicController lc, EventArgs eUpdateArgs);
+        public delegate void UpdateDisplayedText(LogicController lc, EventArgs eUpdateArgs = null);
 
         /* Event informujacy o bledzie */
         public event DisplayErrorInfo ErrorOccurred;
-        public MyEventArgs eErrorArgs = null;
+        //public MyEventArgs eErrorArgs = null;
         public delegate void DisplayErrorInfo(LogicController lc, MyEventArgs eErrorArgs);
+
+        /* Event do blokowania i odblokowywania zmiany dlugosci slowa */
+        public event ChangeWordButtonState ChangeWordButton;
+        //public MyEventArgs eWordButtonArgs = null;
+        public delegate void ChangeWordButtonState(LogicController lc, MyEventArgs eWordButtonArgs);
+
+        public event UnlockSpecifiedButtons UnlockButtons;
+        public delegate void UnlockSpecifiedButtons(LogicController lc, MyEventArgs groupToLock);
+
+        public event LockSpecifiedButtons LockButtons;
+        public delegate void LockSpecifiedButtons(LogicController lc, MyEventArgs groupToLock);
 
         /* Tablica dostpenych operacji matematycznych */
         static char[] SignsArray = { '+', '-', '*', '/', '%' };
 
         /* Zestaw dostepnych systemow liczbowych i zmienna przechowujaca obecny system liczbowy */
-        enum NumberBaseSystem { Binary = 2, Octal = 8, Decimal= 10, Hexadecimal = 16 };
+        public enum NumberBaseSystem { Binary = 2, Octal = 8, Decimal= 10, Hexadecimal = 16 };
         NumberBaseSystem CurrentNumberBaseSystem;
 
         /* Zestaw dostepnych rozmiarow czcionek i zmienna przechowujaca obecny rozmiar czcionki */
@@ -102,6 +135,9 @@ namespace TSWA
         public enum WordLengths { BYTE = 8, WORD = 16, DWORD = 32, QWORD = 64 };
         WordLengths CurrentWordLength;
 
+        long m_lCurrentEquation;
+        long m_lFirstOperand;
+        long m_lSecondOperand;
         
         public LogicController() {
             Init();
@@ -146,18 +182,47 @@ namespace TSWA
         public void ClearEquation() {
             CurrentEquationState = "0";
             UpdateDisplay(this, eUpdateArgs);
+            ChangeWordButton(this, new MyEventArgs("true"));
         }
 
         /* Dodaje cyfre do dzialania */
-        public void AddNumberToEquation(string Number)
-        {
+        public void AddNumberToEquation(string Number) {
             if(CurrentEquationState == "0") {
                 CurrentEquationState = Number;
             }
             else {
-                CurrentEquationState += Number;
+                string tmpNumber = (CurrentEquationState + Number).ExtractLastNumberFromString();
+                if (true == TryConversionToDecimal(ref tmpNumber)) {
+                    CurrentEquationState += Number;
+                }
             }
             UpdateDisplay(this, eUpdateArgs);
+        }
+
+        /* TODO PRZEROBKA */
+        /* Sprawdza czy liczba w stringu nalezy do zakresu danego typu */
+        public bool IsNumberInRange(string numberToTest) {
+            bool bResult = false;
+            long qwordNumber = 0;
+            int dwordNumber = 0;
+            short wordNumber = 0;
+            sbyte byteNumber = 0;
+
+            switch (CurrentWordLength) {
+                case WordLengths.QWORD:
+                    bResult = long.TryParse(numberToTest, out qwordNumber);
+                    break;
+                case WordLengths.DWORD:
+                    bResult = int.TryParse(numberToTest, out dwordNumber);
+                    break;
+                case WordLengths.WORD:
+                    bResult = short.TryParse(numberToTest, out wordNumber);
+                    break;
+                case WordLengths.BYTE:
+                    bResult = sbyte.TryParse(numberToTest, out byteNumber);
+                    break;
+            }
+            return bResult;
         }
 
         /* Usuwa ostatni wprowadzony znak */
@@ -168,16 +233,19 @@ namespace TSWA
             else if (CurrentEquationState != "0" && CurrentEquationState.Length == 1) {
                 CurrentEquationState = "0";
             }
+            if (false == CurrentEquationState.IsThereAnyMathematicalOperatorInString()) {
+                ChangeWordButton(this, new MyEventArgs("true"));
+            }
             UpdateDisplay(this, eUpdateArgs);
         }
 
         /* Dodaje znak do dzialania */
-        public void AddSignToEquation(char Operator)
-        {
+        public void AddSignToEquation(char Operator) {
             if(true == CurrentEquationState[CurrentEquationState.Length - 1].IsMathematicalOperator()) {
                 CurrentEquationState = CurrentEquationState.Remove(CurrentEquationState.Length - 1, 1);
             }
             CurrentEquationState += Operator;
+            ChangeWordButton(this, new MyEventArgs("false"));
             UpdateDisplay(this, eUpdateArgs);
         }
 
@@ -216,6 +284,13 @@ namespace TSWA
                 ErrorOccurred(this, new MyEventArgs("Blad we wprowadzonym dzialaniu!"));
                 CurrentEquationState = "0";
             }
+            else {
+                CutDecimalPortion();
+                // ewentualne skrocenie liczby gdyby byla za duza dla danego rozmiaru slowa
+                TrimOutcomeNumber();
+                ChangeNumberBaseSystem(CurrentEquationState, NumberBaseSystem.Decimal, CurrentNumberBaseSystem);
+            }
+            ChangeWordButton(this, new MyEventArgs("true"));
             UpdateDisplay(this, eUpdateArgs);
         }
 
@@ -240,7 +315,160 @@ namespace TSWA
                     CurrentWordLength = WordLengths.QWORD;
                     break;
             }
+            ChangeNumberBaseSystem(ConvertNumberToDecimal(CurrentEquationState.ExtractLastNumberFromString()), NumberBaseSystem.Decimal, CurrentNumberBaseSystem);
             return new TextInformation(CurrentWordLength.ToString(), FontSizes.VerySmall, Brushes.Blue);
         }
+
+        /* Ustawia nowy system liczbowy */
+        public void ChangeBaseNumberSystem(string NumberSystem) {
+            NumberBaseSystem previousBaseSystem = CurrentNumberBaseSystem;
+            string tempNumber = ConvertNumberToDecimal(CurrentEquationState.ExtractLastNumberFromString());
+
+            CurrentNumberBaseSystem = (NumberBaseSystem)Enum.Parse(typeof(NumberBaseSystem), NumberSystem);
+            switch (CurrentNumberBaseSystem) {
+                case NumberBaseSystem.Binary:
+                    LockButtons(this, new MyEventArgs("Octal"));
+                    LockButtons(this, new MyEventArgs("Decimal"));
+                    LockButtons(this, new MyEventArgs("Hexadecimal"));
+                    break;
+                case NumberBaseSystem.Octal:
+                    UnlockButtons(this, new MyEventArgs("Octal"));
+                    LockButtons(this, new MyEventArgs("Decimal"));
+                    LockButtons(this, new MyEventArgs("Hexadecimal"));
+                    break;
+                case NumberBaseSystem.Decimal:
+                    UnlockButtons(this, new MyEventArgs("Octal"));
+                    UnlockButtons(this, new MyEventArgs("Decimal"));
+                    LockButtons(this, new MyEventArgs("Hexadecimal"));
+                    break;
+                case NumberBaseSystem.Hexadecimal:
+                    UnlockButtons(this, new MyEventArgs("Octal"));
+                    UnlockButtons(this, new MyEventArgs("Decimal"));
+                    UnlockButtons(this, new MyEventArgs("Hexadecimal"));
+                    break;
+            }
+            ChangeNumberBaseSystem(tempNumber, NumberBaseSystem.Decimal, CurrentNumberBaseSystem);
+        }
+
+        /* Zwraca info o czcionce */
+        public TextInformation GetFontForNumberBaseButton(string Tag) {
+            Brush color = Brushes.Black;
+            if (CurrentNumberBaseSystem == (NumberBaseSystem)Enum.Parse(typeof(NumberBaseSystem), Tag)) {
+                color = Brushes.Blue;
+            }
+            return new TextInformation(CurrentWordLength.ToString(), FontSizes.VerySmall, color);
+        }
+
+        /* Zmienia wyswietlana liczbe (w dowolnym systemie liczbowym w zaleznosci 
+         * od wybranej dlugosci slowa. Na wejsciu przyjmuje liczbe w systemie 
+         * dziesietnym. */
+        public void ChangeNumberBaseSystem(string decNumber, NumberBaseSystem fromBase, NumberBaseSystem goalBase) {
+
+            switch (CurrentWordLength) {
+                case WordLengths.QWORD:
+                    CurrentEquationState = Convert.ToString(Convert.ToInt64((long.Parse(decNumber)).ToString(), (int)fromBase), (int)goalBase).ToUpper();
+                    break;
+                case WordLengths.DWORD:
+                    CurrentEquationState = Convert.ToString(Convert.ToInt32(((int)(long.Parse(decNumber))).ToString(), (int)fromBase), (int)goalBase).ToUpper();
+                    break;
+                case WordLengths.WORD:
+                    CurrentEquationState = Convert.ToString(Convert.ToInt16(((short)(long.Parse(decNumber))).ToString(), (int)fromBase), (int)goalBase).ToUpper();
+                    break;
+                case WordLengths.BYTE:
+                    CurrentEquationState = Convert.ToString(Convert.ToSByte(((sbyte)(long.Parse(decNumber))).ToString(), (int)fromBase), (int)goalBase).ToUpper();
+                    switch (CurrentNumberBaseSystem) {
+                        case NumberBaseSystem.Binary:
+                            if(CurrentEquationState.Length > 8) CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 8);
+                            break;
+                        case NumberBaseSystem.Decimal:
+                            break;
+                        case NumberBaseSystem.Hexadecimal:
+                            if (CurrentEquationState.Length > 2) CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 2);
+                            break;
+                        case NumberBaseSystem.Octal:
+                            break;
+                    }
+                    break;
+            }
+            UpdateDisplay(this, eUpdateArgs);
+        }
+
+        /* Sprawdza czy da sie zapisac liczbe w systemie dziesietnym dla danego rozmiaru slowa.
+         * Jesli jest to mozliwe, zwracana jest wartosc true, a w argumencie Number znajduje sie
+         * skonwertowana wartosc. Jesli nie jest to mozliwe zwracana jest wartosc false, a w argumencie
+         * Number znajduje sie poczatkowa wartosc. */
+        public bool TryConversionToDecimal(ref string Number) {
+            bool bReturn = true;
+            try {
+                switch (CurrentWordLength) {
+                    case WordLengths.QWORD:
+                        Number = Convert.ToInt64(Number, (int)CurrentNumberBaseSystem).ToString();
+                        break;
+                    case WordLengths.DWORD:
+                        Number = Convert.ToInt32(Number, (int)CurrentNumberBaseSystem).ToString();
+                        break;
+                    case WordLengths.WORD:
+                        Number = Convert.ToInt16(Number, (int)CurrentNumberBaseSystem).ToString();
+                        break;
+                    case WordLengths.BYTE:
+                        Number = Convert.ToSByte(Number, (int)CurrentNumberBaseSystem).ToString();
+                        break;
+                }
+            }
+            catch (OverflowException) {
+                bReturn = false;
+            }
+            return bReturn;
+        }
+
+        /* Konwertuje liczbe podana w stringu na liczbe w systemie dziesietnym. 
+         * Konwersja uwzglednia obecna dlugosc slowa. */
+        public string ConvertNumberToDecimal(string Number) {
+            switch (CurrentWordLength) {
+                case WordLengths.QWORD:
+                    Number = Convert.ToInt64(Number, (int)CurrentNumberBaseSystem).ToString();
+                    break;
+                case WordLengths.DWORD:
+                    Number = ((int)Convert.ToInt64(Number, (int)CurrentNumberBaseSystem)).ToString();
+                    break;
+                case WordLengths.WORD:
+                    Number = ((short)Convert.ToInt32(Number, (int)CurrentNumberBaseSystem)).ToString();
+                    break;
+                case WordLengths.BYTE:
+                    Number = ((sbyte)Convert.ToInt16(Number, (int)CurrentNumberBaseSystem)).ToString();
+                    break;
+            }
+            return Number;
+        }
+
+        /* Usuwa czesc dziesietna (ulamkowa) z liczby */
+        public void CutDecimalPortion() {
+            int resultIndex = CurrentEquationState.IndexOf(',');
+            if(-1 != resultIndex) {
+                CurrentEquationState = CurrentEquationState.Substring(0, resultIndex);
+            }
+        }
+
+        /* TODO */
+        public void TrimOutcomeNumber() {
+            if(false == TryConversionToDecimal(ref CurrentEquationState)) {
+                switch (CurrentWordLength) {
+                    case WordLengths.QWORD:
+                        CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 16);
+                        break;
+                    case WordLengths.DWORD:
+                        CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 8);
+                        break;
+                    case WordLengths.WORD:
+                        CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 4);
+                        break;
+                    case WordLengths.BYTE:
+                        CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 2);
+                        break;
+                }
+            }
+        }
+
     }
 }
+

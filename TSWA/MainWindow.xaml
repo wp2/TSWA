@@ -9,7 +9,7 @@
         Height="669" Width="400"
         MinHeight="500" MinWidth="250">
 
-    <Grid Margin="0,40,0,0">
+    <Grid Margin="0,40,0,0" Name="MainGrid">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="70*"/>
@@ -43,14 +43,16 @@
             <TextBlock Name="Displayer" Background="White" TextAlignment="Right" FontSize="45" VerticalAlignment="Center" Margin="15,0,15,0"
                        />
         </Border>
-        
 
         <!-- Wyświetlanie wartosci w roznych systemach liczbowych -->
-        <Button Grid.ColumnSpan="6" Grid.Row="1" Style="{StaticResource ChangeNumericSystemButtons}" Content="   HEX"></Button>
-        <Button Grid.ColumnSpan="6" Grid.Row="2" Style="{StaticResource ChangeNumericSystemButtons}" Content="   DEC"></Button>
-        <Button Grid.ColumnSpan="6" Grid.Row="3" Style="{StaticResource ChangeNumericSystemButtons}" Content="   OCT"></Button>
-        <Button Grid.ColumnSpan="6" Grid.Row="4" Style="{StaticResource ChangeNumericSystemButtons}" Content="   BIN" Margin="0,0,0,2"></Button>
-        
+
+
+        <Button Name="HexButton" Grid.ColumnSpan="6" Grid.Row="1" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Hexadecimal" Content="   HEX" Click="Base_Button_Click"></Button>
+        <Button Name="DecButton" Grid.ColumnSpan="6" Grid.Row="2" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Decimal" Content="   DEC" Click="Base_Button_Click"></Button>
+        <Button Name="OctButton" Grid.ColumnSpan="6" Grid.Row="3" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Octal" Content="   OCT" Click="Base_Button_Click"></Button>
+        <Button Name="BinButton" Grid.ColumnSpan="6" Grid.Row="4" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Binary" Content="   BIN" Click="Base_Button_Click" Margin="0,0,0,2"></Button>
+
+
         <!-- 5 przyciskow -->
         <Button Grid.Column="0" Grid.Row="5" Style="{StaticResource FirstTwoRowsButtonStyle}"></Button>
         <Button Grid.Column="1" Grid.Row="5" Style="{StaticResource FirstTwoRowsButtonStyle}"></Button>
@@ -80,41 +82,36 @@
         <Button Grid.Column="5" Grid.Row="7" Style="{StaticResource MainKeyboardStyle}" Tag="/" Click="Sign_Button_Click">/</Button>
 
         <!-- 3. wiersz -->
-        <Button Grid.Column="0" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="A" Click="Numeric_Button_Click" IsEnabled="False">A</Button>
-        <Button Grid.Column="1" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="B" Click="Numeric_Button_Click" IsEnabled="False">B</Button>
-        <Button Grid.Column="2" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="7" Click="Numeric_Button_Click">7</Button>
-        <Button Grid.Column="3" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="8" Click="Numeric_Button_Click">8</Button>
-        <Button Grid.Column="4" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="9" Click="Numeric_Button_Click">9</Button>
+        <Button Grid.Column="0" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Hexadecimal" Click="Numeric_Button_Click" IsEnabled="False">A</Button>
+        <Button Grid.Column="1" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Hexadecimal" Click="Numeric_Button_Click" IsEnabled="False">B</Button>
+        <Button Grid.Column="2" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Octal" Click="Numeric_Button_Click">7</Button>
+        <Button Grid.Column="3" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Decimal" Click="Numeric_Button_Click">8</Button>
+        <Button Grid.Column="4" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Decimal" Click="Numeric_Button_Click">9</Button>
         <Button Grid.Column="5" Grid.Row="8" Style="{StaticResource MainKeyboardStyle}" Tag="*" Click="Sign_Button_Click">X</Button>
 
         <!-- 4. wiersz -->
-        <Button Grid.Column="0" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="C" Click="Numeric_Button_Click" IsEnabled="False">C</Button>
-        <Button Grid.Column="1" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="D" Click="Numeric_Button_Click" IsEnabled="False">D</Button>
-        <Button Grid.Column="2" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="4" Click="Numeric_Button_Click">4</Button>
-        <Button Grid.Column="3" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="5" Click="Numeric_Button_Click">5</Button>
-        <Button Grid.Column="4" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="6" Click="Numeric_Button_Click">6</Button>
+        <Button Grid.Column="0" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Hexadecimal" Click="Numeric_Button_Click" IsEnabled="False">C</Button>
+        <Button Grid.Column="1" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Hexadecimal" Click="Numeric_Button_Click" IsEnabled="False">D</Button>
+        <Button Grid.Column="2" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Octal" Click="Numeric_Button_Click">4</Button>
+        <Button Grid.Column="3" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Octal" Click="Numeric_Button_Click">5</Button>
+        <Button Grid.Column="4" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Octal" Click="Numeric_Button_Click">6</Button>
         <Button Grid.Column="5" Grid.Row="9" Style="{StaticResource MainKeyboardStyle}" Tag="-" Click="Sign_Button_Click">-</Button>
 
         <!-- 5. wiersz -->
-        <Button Grid.Column="0" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="E" Click="Numeric_Button_Click" IsEnabled="False">E</Button>
-        <Button Grid.Column="1" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="F" Click="Numeric_Button_Click" IsEnabled="False">F</Button>
-        <Button Grid.Column="2" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="1" Click="Numeric_Button_Click">1</Button>
-        <Button Grid.Column="3" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="2" Click="Numeric_Button_Click">2</Button>
-        <Button Grid.Column="4" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="3" Click="Numeric_Button_Click">3</Button>
+        <Button Grid.Column="0" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Hexadecimal" Click="Numeric_Button_Click" IsEnabled="False">E</Button>
+        <Button Grid.Column="1" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Hexadecimal" Click="Numeric_Button_Click" IsEnabled="False">F</Button>
+        <Button Grid.Column="2" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Binary" Click="Numeric_Button_Click">1</Button>
+        <Button Grid.Column="3" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Octal" Click="Numeric_Button_Click">2</Button>
+        <Button Grid.Column="4" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" Tag ="Octal" Click="Numeric_Button_Click">3</Button>
         <Button Grid.Column="5" Grid.Row="10" Style="{StaticResource MainKeyboardStyle}" Tag="+" Click="Sign_Button_Click">+</Button>
 
         <!-- 6. wiersz -->
         <Button Grid.Column="0" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" Tag="(" FontWeight="Bold" Click="Parenthesis_Button_Click">(</Button>
         <Button Grid.Column="1" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" Tag=")" FontWeight="Bold" Click="Parenthesis_Button_Click">)</Button>
         <Button Grid.Column="2" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" >+/-</Button>
-        <Button Grid.Column="3" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold"  Tag ="0" Click="Numeric_Button_Click">0</Button>
+        <Button Grid.Column="3" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold"  Tag ="Binary" Click="Numeric_Button_Click">0</Button>
         <Button Grid.Column="4" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" FontWeight="Bold" IsEnabled="False">,</Button>
         <Button Grid.Column="5" Grid.Row="11" Style="{StaticResource MainKeyboardStyle}" Click="Equal_Button_Click">=</Button>
-
-        <!--
-        <Button Height="50" Width="50" Click="Button_Click" Content="{Binding ElementName=textBox, Path=Text}" Margin="60.23,260,30,259" Grid.Column="1"/>
-        <TextBox x:Name="textBox"  Height="23" Margin="86.23,358,33,187" TextWrapping="Wrap" Text="dupa" Width="120" Grid.ColumnSpan="2" Grid.Column="1"/>
-        -->
 
     </Grid>
 </Window>

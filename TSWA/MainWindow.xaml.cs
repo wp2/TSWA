@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace TSWA {
     /// <summary>
@@ -37,11 +26,26 @@ namespace TSWA {
             /* Wskazanie metody wywolywanej przy otrzymaniu eventa o bledzie, jego argumenty
              * zawieraja dane do wyswietlenia w postaci stringa */
             LogicMaster.ErrorOccurred += new LogicController.DisplayErrorInfo(DisplayMessageBox);
+
+            /* Wywola metode blokujaca lub odblokowujaca (w zaleznosci od argumentu eventu) WordButton */
+            LogicMaster.ChangeWordButton += new LogicController.ChangeWordButtonState(ChangeWordButtonState);
+
+            /* */
+            LogicMaster.UnlockButtons += new LogicController.UnlockSpecifiedButtons(UnlockButtonsWithSpecifiedTag);
+
+            /* */
+            LogicMaster.LockButtons += new LogicController.LockSpecifiedButtons(LockButtonsWithSpecifiedTag);
+
+            /* Ustawia poczatkowa czcionke dla przyciskow zmieniajacych system liczbowy */
+            SetButtonFont(BinButton, LogicMaster.GetFontForNumberBaseButton(BinButton.Tag.ToString()));
+            SetButtonFont(OctButton, LogicMaster.GetFontForNumberBaseButton(OctButton.Tag.ToString()));
+            SetButtonFont(DecButton, LogicMaster.GetFontForNumberBaseButton(DecButton.Tag.ToString()));
+            SetButtonFont(HexButton, LogicMaster.GetFontForNumberBaseButton(HexButton.Tag.ToString()));
         }
 
         /* Metoda wywolywana przy nacisnieciu przycisku numerycznego */
         private void Numeric_Button_Click(object sender, RoutedEventArgs e) {
-            LogicMaster.AddNumberToEquation(((Button)sender).Tag.ToString());
+            LogicMaster.AddNumberToEquation(((Button)sender).Content.ToString());
         }
 
         /* Metoda wywolywana przy nacisnieciu przycisku - operacji matematycznej */
@@ -63,8 +67,7 @@ namespace TSWA {
         private void Word_Button_Click(object sender, RoutedEventArgs e) {
             TextInformation newTextInformation = LogicMaster.ChangeWordLength();
             WordButton.Content = newTextInformation.Content;
-            WordButton.FontSize = newTextInformation.FontSize;
-            WordButton.Foreground = newTextInformation.Foreground;
+            SetButtonFont(WordButton, newTextInformation);
         }
 
         /* Metoda wywolywana przy nacisnieciu przycisku rownania */
@@ -94,8 +97,62 @@ namespace TSWA {
         private void Parenthesis_Button_Click(object sender, RoutedEventArgs e) {
             LogicMaster.AddParenthesisToEquation(((Button)sender).Tag.ToString().ToCharArray()[0]);
         }
+
+        private void ChangeWordButtonState(LogicController lc, MyEventArgs e) {
+            WordButton.IsEnabled = bool.Parse(e.MyEventString);
+            BinButton.IsEnabled = bool.Parse(e.MyEventString);
+            OctButton.IsEnabled = bool.Parse(e.MyEventString);
+            DecButton.IsEnabled = bool.Parse(e.MyEventString);
+            HexButton.IsEnabled = bool.Parse(e.MyEventString);
+        }
+
+        private void Base_Button_Click(object sender, RoutedEventArgs e) {
+            LogicMaster.ChangeBaseNumberSystem(((Button)sender).Tag.ToString());
+            SetButtonFont(BinButton, LogicMaster.GetFontForNumberBaseButton(BinButton.Tag.ToString()));
+            SetButtonFont(OctButton, LogicMaster.GetFontForNumberBaseButton(OctButton.Tag.ToString()));
+            SetButtonFont(DecButton, LogicMaster.GetFontForNumberBaseButton(DecButton.Tag.ToString()));
+            SetButtonFont(HexButton, LogicMaster.GetFontForNumberBaseButton(HexButton.Tag.ToString()));
+        }
+
+        private void SetButtonFont(Button btn, TextInformation txtInfo) {
+            btn.FontSize = txtInfo.FontSize;
+            btn.Foreground = txtInfo.Foreground;
+        }
+
+        private void LockButtonsWithSpecifiedTag(LogicController lc, MyEventArgs e) {
+            for (int i = 0; i < MainGrid.Children.Count; ++i) {
+                if (MainGrid.Children[i] is Button) {
+                    Button tmpButton = (Button)MainGrid.Children[i];
+                    if (tmpButton.Tag != null && tmpButton.Name.ToString() == "" && tmpButton.Tag.ToString() == e.MyEventString) {
+                        MainGrid.Children[i].IsEnabled = false;
+                    }
+                }
+            }
+        }
+
+        private void UnlockButtonsWithSpecifiedTag(LogicController lc, MyEventArgs e) {
+            for (int i = 0; i < MainGrid.Children.Count; ++i) {
+                if (MainGrid.Children[i] is Button) {
+                    Button tmpButton = (Button)MainGrid.Children[i];
+                    if (tmpButton.Tag != null && tmpButton.Name == "" && tmpButton.Tag.ToString() == e.MyEventString) {
+                        MainGrid.Children[i].IsEnabled = true;
+                    }
+                }
+            }
+        }
+
     }
 }
+
+
+//for(int i = 0; i < MainGrid.Children.Count; ++i) {
+//    if(MainGrid.Children[i] is Button) {
+//        Button tmpButton = (Button)MainGrid.Children[i];
+//        if(tmpButton.Tag != null && tmpButton.Tag.ToString() == "Binary") {
+//            MainGrid.Children[i].IsEnabled = false;
+//        }
+//    }
+//}
 
 //private void Button_Click(object sender, RoutedEventArgs e) {
 //    e.Handled = true;
@@ -104,3 +161,4 @@ namespace TSWA {
 //    int rowNumber = (int)((Button)sender).GetValue(Grid.RowProperty);
 //    int colNumber = (int)((Button)sender).GetValue(Grid.ColumnProperty);
 //}
+
