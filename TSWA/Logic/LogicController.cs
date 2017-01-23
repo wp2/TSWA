@@ -68,6 +68,10 @@ namespace TSWA
         public static bool IsMathematicalOperator(this char c) {
             return (c == '+' || c == '-' || c == '*' || c == '/' || c == '%');
         }
+
+        public static bool IsParenthesis(this char c) {
+            return (c == '(' || c == ')');
+        }
     }
 
     public static class StringExtensions {
@@ -83,10 +87,23 @@ namespace TSWA
         }
 
         /* Zwraca ostatnia liczbe z dzialania */
-        public static string ExtractLastNumberFromString(this string strToParse) {
-            //var numbers = Regex.Split(strToParse, @"(-?\d+)");
-            var numbers = Regex.Split(strToParse, @"(-?\w*\d*[\w\d]+)");
+        public static string ExtractLastNumberFromString(this string strToParse, bool searchWithMinus = true) {
+            string[] numbers;
+            if (true == searchWithMinus) {
+                numbers = Regex.Split(strToParse, @"(-?\w*\d*[\w\d]+)");
+            }
+            else {
+                numbers = Regex.Split(strToParse, @"(\w*\d*[\w\d]+)");
+            }
             return numbers[numbers.Length - 2];
+        }
+
+        public static string[] ParseEquation(this string strToParse) {
+            return Regex.Split(strToParse, @"(\w*\d*[\w\d]+)");
+        }
+
+        public static bool IsStringNumber(this string strNumber) {
+            return Regex.IsMatch(strNumber, @"(\w*\d*[\w\d]+)");
         }
     }
 
@@ -135,9 +152,7 @@ namespace TSWA
         public enum WordLengths { BYTE = 8, WORD = 16, DWORD = 32, QWORD = 64 };
         WordLengths CurrentWordLength;
 
-        long m_lCurrentEquation;
-        long m_lFirstOperand;
-        long m_lSecondOperand;
+        bool m_fSearchWithMinus;
         
         public LogicController() {
             Init();
@@ -176,6 +191,7 @@ namespace TSWA
             }
             xml.Close();
             FileInput.Close();
+            m_fSearchWithMinus = true;
         }
 
         /* Czysci dzialanie */
@@ -191,38 +207,12 @@ namespace TSWA
                 CurrentEquationState = Number;
             }
             else {
-                string tmpNumber = (CurrentEquationState + Number).ExtractLastNumberFromString();
+                string tmpNumber = (CurrentEquationState + Number).ExtractLastNumberFromString(m_fSearchWithMinus);
                 if (true == TryConversionToDecimal(ref tmpNumber)) {
                     CurrentEquationState += Number;
                 }
             }
             UpdateDisplay(this, eUpdateArgs);
-        }
-
-        /* TODO PRZEROBKA */
-        /* Sprawdza czy liczba w stringu nalezy do zakresu danego typu */
-        public bool IsNumberInRange(string numberToTest) {
-            bool bResult = false;
-            long qwordNumber = 0;
-            int dwordNumber = 0;
-            short wordNumber = 0;
-            sbyte byteNumber = 0;
-
-            switch (CurrentWordLength) {
-                case WordLengths.QWORD:
-                    bResult = long.TryParse(numberToTest, out qwordNumber);
-                    break;
-                case WordLengths.DWORD:
-                    bResult = int.TryParse(numberToTest, out dwordNumber);
-                    break;
-                case WordLengths.WORD:
-                    bResult = short.TryParse(numberToTest, out wordNumber);
-                    break;
-                case WordLengths.BYTE:
-                    bResult = sbyte.TryParse(numberToTest, out byteNumber);
-                    break;
-            }
-            return bResult;
         }
 
         /* Usuwa ostatni wprowadzony znak */
@@ -276,6 +266,12 @@ namespace TSWA
 
         /* Przekazuje dzialanie do obliczenia */
         public void ExecuteCalculations() {
+            string tempTODELETE = CurrentEquationState;
+            if(NumberBaseSystem.Decimal != CurrentNumberBaseSystem) {
+                string[] parsedEquation = CurrentEquationState.ParseEquation();
+                AnalyzeParsedEquation(parsedEquation);
+            }
+
             ONP myONP = new ONP(CurrentEquationState);
             CurrentEquationState = myONP.ONPCalculationResult();
 
@@ -315,14 +311,14 @@ namespace TSWA
                     CurrentWordLength = WordLengths.QWORD;
                     break;
             }
-            ChangeNumberBaseSystem(ConvertNumberToDecimal(CurrentEquationState.ExtractLastNumberFromString()), NumberBaseSystem.Decimal, CurrentNumberBaseSystem);
+            ChangeNumberBaseSystem(ConvertNumberToDecimal(CurrentEquationState.ExtractLastNumberFromString(m_fSearchWithMinus)), NumberBaseSystem.Decimal, CurrentNumberBaseSystem);
             return new TextInformation(CurrentWordLength.ToString(), FontSizes.VerySmall, Brushes.Blue);
         }
 
         /* Ustawia nowy system liczbowy */
         public void ChangeBaseNumberSystem(string NumberSystem) {
             NumberBaseSystem previousBaseSystem = CurrentNumberBaseSystem;
-            string tempNumber = ConvertNumberToDecimal(CurrentEquationState.ExtractLastNumberFromString());
+            string tempNumber = ConvertNumberToDecimal(CurrentEquationState.ExtractLastNumberFromString(m_fSearchWithMinus));
 
             CurrentNumberBaseSystem = (NumberBaseSystem)Enum.Parse(typeof(NumberBaseSystem), NumberSystem);
             switch (CurrentNumberBaseSystem) {
@@ -330,21 +326,25 @@ namespace TSWA
                     LockButtons(this, new MyEventArgs("Octal"));
                     LockButtons(this, new MyEventArgs("Decimal"));
                     LockButtons(this, new MyEventArgs("Hexadecimal"));
+                    m_fSearchWithMinus = false;
                     break;
                 case NumberBaseSystem.Octal:
                     UnlockButtons(this, new MyEventArgs("Octal"));
                     LockButtons(this, new MyEventArgs("Decimal"));
                     LockButtons(this, new MyEventArgs("Hexadecimal"));
+                    m_fSearchWithMinus = false;
                     break;
                 case NumberBaseSystem.Decimal:
                     UnlockButtons(this, new MyEventArgs("Octal"));
                     UnlockButtons(this, new MyEventArgs("Decimal"));
                     LockButtons(this, new MyEventArgs("Hexadecimal"));
+                    m_fSearchWithMinus = true;
                     break;
                 case NumberBaseSystem.Hexadecimal:
                     UnlockButtons(this, new MyEventArgs("Octal"));
                     UnlockButtons(this, new MyEventArgs("Decimal"));
                     UnlockButtons(this, new MyEventArgs("Hexadecimal"));
+                    m_fSearchWithMinus = false;
                     break;
             }
             ChangeNumberBaseSystem(tempNumber, NumberBaseSystem.Decimal, CurrentNumberBaseSystem);
@@ -451,21 +451,37 @@ namespace TSWA
 
         /* TODO */
         public void TrimOutcomeNumber() {
-            if(false == TryConversionToDecimal(ref CurrentEquationState)) {
-                switch (CurrentWordLength) {
-                    case WordLengths.QWORD:
-                        CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 16);
-                        break;
-                    case WordLengths.DWORD:
-                        CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 8);
-                        break;
-                    case WordLengths.WORD:
-                        CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 4);
-                        break;
-                    case WordLengths.BYTE:
-                        CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 2);
-                        break;
+            //if(false == TryConversionToDecimal(ref CurrentEquationState)) {
+            //    switch (CurrentWordLength) {
+            //        case WordLengths.QWORD:
+            //            CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 16);
+            //            break;
+            //        case WordLengths.DWORD:
+            //            CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 8);
+            //            break;
+            //        case WordLengths.WORD:
+            //            CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 4);
+            //            break;
+            //        case WordLengths.BYTE:
+            //            CurrentEquationState = CurrentEquationState.Substring(CurrentEquationState.Length - 2);
+            //            break;
+            //    }
+            //}
+        }
+
+        public void AnalyzeParsedEquation(string[] parsedEuqation) {
+            CurrentEquationState = "";
+            foreach(string s in parsedEuqation) {
+                if(s.Length == 0) {
+                    continue;
                 }
+                if(s.Length == 1 && (s[0].IsParenthesis() || s[0].IsMathematicalOperator())) {
+                    CurrentEquationState += s;
+                }
+                else if(true == s.IsStringNumber()) {
+                    CurrentEquationState += ConvertNumberToDecimal(s);
+                }
+                
             }
         }
 
