@@ -136,21 +136,23 @@ namespace TSWA
 
         /* Zestaw dostepnych systemow liczbowych i zmienna przechowujaca obecny system liczbowy */
         public enum NumberBaseSystem { Binary = 2, Octal = 8, Decimal= 10, Hexadecimal = 16 };
-        NumberBaseSystem CurrentNumberBaseSystem;
+        public NumberBaseSystem CurrentNumberBaseSystem { get; set; }
 
         /* Zestaw dostepnych rozmiarow czcionek i zmienna przechowujaca obecny rozmiar czcionki */
         public enum FontSizes { VerySmall = 12, Small = 25, Medium = 35, Big = 45, VeryBig = 50 };
-        FontSizes CurrentFontSize;
+        public FontSizes CurrentFontSize { get; set; }
 
         /* Obecny kolor czcionki */
-        Brush CurrentFontColor;
+        public Brush CurrentFontColor { get; set; }
+
+        //public string MyEventString { get; set; }
 
         /* Obecne dzialanie matematyczne */
-        string CurrentEquationState;
+        public string CurrentEquationState { get; set; }
 
         /* Zestaw dostepnych dlugosci slow i zmienna przechowujaca obecna dlugosc slowa */
         public enum WordLengths { BYTE = 8, WORD = 16, DWORD = 32, QWORD = 64 };
-        WordLengths CurrentWordLength;
+        public WordLengths CurrentWordLength { get; set; }
 
         bool m_fSearchWithMinus;
         
