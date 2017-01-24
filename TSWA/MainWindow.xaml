@@ -47,10 +47,10 @@
         <!-- Wyświetlanie wartosci w roznych systemach liczbowych -->
 
 
-        <Button Name="HexButton" Grid.ColumnSpan="6" Grid.Row="1" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Hexadecimal" Content="   HEX" Click="Base_Button_Click"></Button>
-        <Button Name="DecButton" Grid.ColumnSpan="6" Grid.Row="2" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Decimal" Content="   DEC" Click="Base_Button_Click"></Button>
-        <Button Name="OctButton" Grid.ColumnSpan="6" Grid.Row="3" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Octal" Content="   OCT" Click="Base_Button_Click"></Button>
-        <Button Name="BinButton" Grid.ColumnSpan="6" Grid.Row="4" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Binary" Content="   BIN" Click="Base_Button_Click" Margin="0,0,0,2"></Button>
+        <Button Name="HexButton" Grid.ColumnSpan="6" Grid.Row="1" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Hexadecimal" Content="  HEX" Click="Base_Button_Click"></Button>
+        <Button Name="DecButton" Grid.ColumnSpan="6" Grid.Row="2" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Decimal" Content="  DEC" Click="Base_Button_Click"></Button>
+        <Button Name="OctButton" Grid.ColumnSpan="6" Grid.Row="3" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Octal" Content="  OCT" Click="Base_Button_Click"></Button>
+        <Button Name="BinButton" Grid.ColumnSpan="6" Grid.Row="4" Style="{StaticResource ChangeNumericSystemButtons}" Tag="Binary" Content="  BIN" Click="Base_Button_Click" Margin="0,0,0,2"></Button>
 
 
         <!-- 5 przyciskow -->

@@ -93,9 +93,10 @@
         </Style.Triggers>
     </Style>
 
-    <!-- Styl dla przyciskow numerycznych, operacji itp. -->
+    <!-- Styl dla przyciskow numerycznych, operacji itp. --> 
     <Style TargetType="Button" x:Key="ChangeNumericSystemButtons">
-        <Setter Property="FontSize" Value="11.5px"></Setter>
+        <Setter Property="FontFamily" Value="Consolas"></Setter>
+        <Setter Property="FontSize" Value="12.5px"></Setter>
         <Setter Property="FontWeight" Value="Bold"></Setter>
         <Setter Property="Background" Value="#FFFFFF"/>
         <Setter Property="Padding" Value="10,0,0,0"></Setter>

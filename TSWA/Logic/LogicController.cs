@@ -99,7 +99,7 @@ namespace TSWA
         }
 
         public static string[] ParseEquation(this string strToParse) {
-            return Regex.Split(strToParse, @"(\w*\d*[\w\d]+)");
+            return Regex.Split(strToParse, @"(\(|\))|(\d*\w*[\w\d]+)|(\+|\-|\*|\%|\/)");
         }
 
         public static bool IsStringNumber(this string strNumber) {

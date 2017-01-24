@@ -144,21 +144,3 @@ namespace TSWA {
     }
 }
 
-
-//for(int i = 0; i < MainGrid.Children.Count; ++i) {
-//    if(MainGrid.Children[i] is Button) {
-//        Button tmpButton = (Button)MainGrid.Children[i];
-//        if(tmpButton.Tag != null && tmpButton.Tag.ToString() == "Binary") {
-//            MainGrid.Children[i].IsEnabled = false;
-//        }
-//    }
-//}
-
-//private void Button_Click(object sender, RoutedEventArgs e) {
-//    e.Handled = true;
-//    var myValue = ((Button)sender).Tag.ToString();
-//    MessageBox.Show(String.Format("{0}, {1}, {2}, {3}", sender.ToString(),e.ToString(), e.OriginalSource.ToString(), myValue));
-//    int rowNumber = (int)((Button)sender).GetValue(Grid.RowProperty);
-//    int colNumber = (int)((Button)sender).GetValue(Grid.ColumnProperty);
-//}
-
