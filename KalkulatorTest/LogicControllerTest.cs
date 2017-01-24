@@ -250,6 +250,19 @@ namespace KalkulatorTest {
 
     [TestClass]
     public class LogicControllerTest {
+        public LogicController LogicMaster_test { get; set; }
+
+        public void initialisation() {
+            LogicMaster_test = new LogicController();
+
+            LogicMaster_test.UpdateDisplay += new LogicController.UpdateDisplayedText(UpdateDisplay_test);
+            LogicMaster_test.ErrorOccurred += new LogicController.DisplayErrorInfo(DisplayMessageBox_test);
+            LogicMaster_test.ChangeWordButton += new LogicController.ChangeWordButtonState(ChangeWordButtonState_test);
+        }
+
+        private void UpdateDisplay_test(LogicController lc, EventArgs e) { }
+        private void ChangeWordButtonState_test(LogicController lc, MyEventArgs e) { }
+        private void DisplayMessageBox_test(LogicController lc, MyEventArgs e) { }
 
         [TestMethod]
         public void Init_test() {
@@ -272,11 +285,17 @@ namespace KalkulatorTest {
 
         [TestMethod]
         public void ClearEquation_test() {
-            //LogicController LogicMaster = new LogicController();
-            //LogicMaster.CurrentEquationState = "12+7";
-            //string expectedEquation = "0";
-            //LogicMaster.ClearEquation();
-            //Assert.AreEqual(expectedEquation, LogicMaster.CurrentEquationState);
+            initialisation();
+
+            LogicMaster_test.CurrentEquationState = "12+7";
+            string expectedEquation = "0";
+            LogicMaster_test.ClearEquation();
+            Assert.AreEqual(expectedEquation, LogicMaster_test.CurrentEquationState);
+        }
+
+        [TestMethod]
+        public void AddNumberToEquation_test() {
+
         }
 
     }
